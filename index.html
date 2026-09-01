@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Политиколошке студије – Трекер</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0c11;
+  --surface: #131319;
+  --card: #191921;
+  --border: #262631;
+  --accent: #c8a86c;
+  --accent-soft: rgba(200,168,108,0.16);
+  --accent2: #7b96a3;
+  --green: #6ba585;
+  --red: #b56a5c;
+  --amber: #c39a52;
+  --purple: #8f8fb0;
+  --muted: #46465a;
+  --text: #e9e7f0;
+  --text-dim: #b9b7c8;
+  --subtext: #85839a;
+  --white: #f5f4fb;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  min-height: 100vh;
+  padding: 0 0 80px;
+}
+
+/* ── HEADER ── */
+header {
+text-align: center;
+padding: 40px 24px 28px;
+border-bottom: 1px solid var(--border);
+margin-bottom: 0;
+}
+header h1 {
+font-family: 'Playfair Display', serif;
+font-size: clamp(20px, 4vw, 34px);
+font-weight: 900;
+color: var(--white);
+}
+header p { color: var(--subtext); margin-top: 6px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+.glyph-svg { display: inline-block; vertical-align: -0.16em; fill: currentColor; flex-shrink: 0; }
+.glyph-svg.gold { color: var(--accent); }
+.glyph-svg.moon-tone { color: var(--accent2); }
+.glyph-svg.glow { filter: drop-shadow(0 0 4px rgba(200,168,108,0.55)); }
+.glyph-star { margin-right: 9px; opacity: 0.9; }
+.divider { display: flex; align-items: center; gap: 9px; width: 150px; margin: 14px auto; }
+.divider-line { flex: 1; height: 1px; background: var(--border); }
+.divider-star { display: inline-flex; align-items: center; opacity: 0.9; }
+
+/* ── STICKY DASHBOARD ── */
+#dashboard {
+position: relative;
+overflow: hidden;
+background: var(--surface);
+border-bottom: 1px solid var(--border);
+padding: 16px 24px;
+display: flex;
+flex-direction: column;
+gap: 12px;
+align-items: center;
+justify-content: center;
+}
+#dashboard::before {
+content: '';
+position: absolute;
+inset: 0;
+pointer-events: none;
+opacity: 0.55;
+background-image:
+  radial-gradient(1px 1px at 8% 22%, rgba(200,168,108,0.4) 0, transparent 60%),
+  radial-gradient(1px 1px at 22% 74%, rgba(200,168,108,0.28) 0, transparent 60%),
+  radial-gradient(1.4px 1.4px at 58% 18%, rgba(200,168,108,0.32) 0, transparent 60%),
+  radial-gradient(1px 1px at 78% 64%, rgba(200,168,108,0.22) 0, transparent 60%),
+  radial-gradient(1px 1px at 42% 88%, rgba(200,168,108,0.26) 0, transparent 60%),
+  radial-gradient(1.4px 1.4px at 93% 32%, rgba(200,168,108,0.24) 0, transparent 60%),
+  radial-gradient(1px 1px at 65% 45%, rgba(200,168,108,0.18) 0, transparent 60%);
+}
+.dash-row, .progress-wrap, .dash-avg-wrap { position: relative; z-index: 1; }
+.dash-row {
+display: flex;
+flex-wrap: wrap;
+gap: 14px;
+align-items: center;
+justify-content: center;
+width: 100%;
+}
+.dash-group {
+display: flex;
+flex-wrap: wrap;
+gap: 10px;
+align-items: center;
+justify-content: center;
+}
+.dash-divider {
+width: 1px;
+height: 34px;
+background: var(--border);
+margin: 0 4px;
+}
+.dash-card {
+background: var(--card);
+border: 1px solid var(--border);
+border-radius: 8px;
+padding: 10px 18px;
+text-align: center;
+min-width: 110px;
+}
+.dash-card .num {
+font-family: 'Playfair Display', serif;
+font-size: 22px;
+font-weight: 900;
+line-height: 1;
+}
+.dash-card .lbl { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtext); margin-top: 3px; }
+.num-ok { color: var(--green); }
+.num-fail { color: var(--red); }
+.num-fali { color: var(--red); }
+.num-purple { color: var(--purple); }
+.num-na { color: var(--muted); }
+.num-total { color: var(--accent); }
+.num-avg { color: var(--accent2); }
+.progress-wrap { width: 100%; max-width: 640px; margin: 0 auto; }
+.progress-bar-bg { background: var(--card); border-radius: 20px; height: 8px; overflow: hidden; }
+.progress-bar-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--green), var(--accent2)); transition: width 0.4s ease; }
+.progress-wrap.complete .progress-bar-fill { background: linear-gradient(90deg, var(--accent), var(--green)); box-shadow: 0 0 10px rgba(200,168,108,0.55); }
+.progress-lbl { font-size: 10px; color: var(--subtext); margin-top: 4px; text-align: center; }
+.progress-lbl .glyph-svg { margin-left: 4px; }
+.dash-avg-wrap {
+width: 100%;
+display: flex;
+justify-content: center;
+padding-top: 10px;
+border-top: 1px dashed var(--border);
+}
+
+/* ── CONTENT ── */
+.content { max-width: 960px; margin: 24px auto 0; padding: 0 24px; }
+
+.year-status {
+font-size: 10px;
+font-family: 'DM Mono', monospace;
+font-weight: 500;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+padding: 3px 10px;
+border-radius: 20px;
+}
+.year-status.odslušana {
+background: rgba(196,154,69,0.15);
+color: var(--amber);
+border: 1px solid rgba(196,154,69,0.35);
+}
+.year-status.očišćена {
+background: rgba(107,165,133,0.14);
+color: var(--green);
+border: 1px solid rgba(107,165,133,0.35);
+}
+.year-status .glyph-svg { margin-right: 3px; }
+.year-ratio {
+font-size: 10.5px;
+color: var(--accent2);
+font-family: 'DM Mono', monospace;
+letter-spacing: 0.02em;
+white-space: nowrap;
+}
+
+/* ── YEAR BLOCK ── */
+.year-block { margin-bottom: 20px; }
+.year-title {
+font-family: 'Playfair Display', serif;
+font-size: 17px; font-weight: 700;
+color: var(--accent);
+letter-spacing: 0.04em;
+margin-bottom: 12px;
+display: flex; align-items: center; gap: 12px;
+flex-wrap: wrap;
+}
+.year-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── TABLE ── */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
+table {
+width: 100%;
+border-collapse: collapse;
+background: var(--card);
+border: 1px solid var(--border);
+border-radius: 8px;
+overflow: hidden;
+}
+thead tr { background: var(--surface); border-bottom: 1px solid var(--border); }
+th {
+padding: 9px 12px;
+text-align: left;
+font-size: 10px;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(--subtext);
+font-weight: 400;
+}
+th.c { text-align: center; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr td { border-bottom: none; }
+tr.row-passed td { background: rgba(107,165,133,0.025); }
+tr.row-passed td:first-child { box-shadow: inset 3px 0 0 0 rgba(107,165,133,0.5); }
+tr.row-passed .subject-name { color: var(--text-dim); }
+tr.row-enrolled td { background: rgba(195,154,82,0.035); }
+tr.row-enrolled td:first-child { box-shadow: inset 3px 0 0 0 rgba(195,154,82,0.4); }
+
+.subject-name { color: var(--white); font-size: 12.5px; line-height: 1.3; transition: color 0.2s; }
+.subject-sub { color: var(--subtext); font-size: 10px; margin-top: 2px; font-style: italic; }
+.espb-col { text-align: center; color: var(--accent2); font-weight: 500; }
+.ocena-col { text-align: center; color: var(--accent); font-size: 12px; }
+
+/* badges */
+.badge {
+display: inline-flex; align-items: center; gap: 4px;
+padding: 3px 8px; border-radius: 20px;
+font-size: 10px; font-weight: 500;
+letter-spacing: 0.05em; text-transform: uppercase; white-space: normal;
+line-height: 1.4; text-align: center;
+max-width: 150px;
+}
+.badge-ok  { background: rgba(107,165,133,0.14);  color: var(--green);  border: 1px solid rgba(107,165,133,0.3); }
+.badge-fail{ background: rgba(181,106,92,0.14);   color: var(--red);    border: 1px solid rgba(181,106,92,0.3); }
+.badge-pending{ background: rgba(195,154,82,0.14); color: var(--amber); border: 1px solid rgba(195,154,82,0.3); }
+.badge-na  { background: rgba(70,70,90,0.2);     color: var(--muted);  border: 1px solid rgba(70,70,90,0.4); }
+.badge-enrolled-noconditions { background: rgba(181,106,92,0.14); color: var(--red); border: 1px solid rgba(181,106,92,0.3); }
+.badge-enrolled-condition { background: rgba(143,143,176,0.16); color: var(--purple); border: 1px solid rgba(143,143,176,0.35); }
+.badge-passed { background: rgba(107,165,133,0.14); color: var(--green); border: 1px solid rgba(107,165,133,0.3); font-weight: 500; }
+.badge-passed .glyph-svg { margin-right: 2px; }
+.sem-divider td { border-top: 3px solid var(--accent) !important; }
+.dot { font-size: 7px; }
+
+.star-pop {
+display: inline-block;
+margin-left: 5px;
+color: var(--accent);
+font-size: 12px;
+animation: starPop 0.85s ease forwards;
+}
+@keyframes starPop {
+0%   { opacity: 0; transform: scale(0.4) translateY(3px); }
+30%  { opacity: 1; transform: scale(1.2) translateY(-2px); }
+100% { opacity: 0; transform: scale(1) translateY(-9px); }
+}
+
+/* ── ACTIONS CELL ── */
+.actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; min-width: 190px; }
+
+/* modern compact toggle-chip (replaces native checkbox row) — used for "остварен услов" */
+.toggle-chip {
+position: relative;
+display: inline-flex;
+align-items: center;
+gap: 6px;
+padding: 4px 10px 4px 5px;
+border-radius: 20px;
+border: 1px solid var(--border);
+background: var(--surface);
+cursor: pointer;
+user-select: none;
+transition: border-color 0.15s, background 0.15s;
+}
+.toggle-chip:hover { border-color: var(--accent2); }
+.toggle-chip input {
+position: absolute;
+opacity: 0;
+width: 1px; height: 1px;
+margin: 0;
+}
+.toggle-chip-mark {
+width: 13px; height: 13px;
+border-radius: 50%;
+border: 1px solid var(--border);
+background: var(--bg);
+display: inline-flex;
+align-items: center;
+justify-content: center;
+flex-shrink: 0;
+transition: border-color 0.15s;
+}
+.toggle-chip-mark::after {
+content: '';
+width: 6px; height: 6px;
+border-radius: 50%;
+background: transparent;
+transition: background 0.15s;
+}
+.toggle-chip input:checked ~ .toggle-chip-mark { border-color: var(--green); }
+.toggle-chip input:checked ~ .toggle-chip-mark::after { background: var(--green); }
+.toggle-chip input:focus-visible ~ .toggle-chip-mark { outline: 2px solid var(--accent2); outline-offset: 2px; }
+.toggle-chip-text { font-size: 9.5px; letter-spacing: 0.02em; color: var(--subtext); transition: color 0.15s; }
+.toggle-chip input:checked ~ .toggle-chip-text { color: var(--text-dim); }
+
+/* compact modern selects — rok / ocena / academska godina */
+.rok-select, .ocena-select {
+font-family: 'DM Mono', monospace;
+font-size: 10px;
+background: var(--surface);
+color: var(--amber);
+border: 1px solid var(--border);
+border-radius: 7px;
+padding: 5px 22px 5px 9px;
+cursor: pointer;
+outline: none;
+display: block;
+appearance: none;
+-webkit-appearance: none;
+background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='6'><path d='M0 0L4 6L8 0Z' fill='%2385839a'/></svg>");
+background-repeat: no-repeat;
+background-position: right 8px center;
+transition: border-color 0.15s, box-shadow 0.15s;
+}
+.rok-select { border-color: rgba(195,154,82,0.4); }
+.ocena-select { color: var(--accent2); border-color: rgba(123,150,163,0.4); }
+.rok-select:hover, .ocena-select:hover { border-color: var(--accent2); }
+.rok-select:focus-visible, .ocena-select:focus-visible {
+border-color: var(--accent2);
+box-shadow: 0 0 0 2px rgba(123,150,163,0.28);
+}
+
+/* primary action — "Упиши" (most prominent action in the row) */
+.btn-primary-pill {
+font-family: 'DM Mono', monospace;
+font-size: 10.5px;
+letter-spacing: 0.02em;
+background: linear-gradient(135deg, rgba(200,168,108,0.2), rgba(200,168,108,0.08));
+color: var(--accent);
+border: 1px solid rgba(200,168,108,0.5);
+border-radius: 20px;
+padding: 6px 15px;
+cursor: pointer;
+transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.btn-primary-pill:hover { background: rgba(200,168,108,0.3); border-color: var(--accent); }
+.btn-primary-pill:active { transform: scale(0.96); }
+.btn-primary-pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* confirm-pass action — "Означи као положено" (secondary emphasis, calmer than enroll) */
+.btn-confirm-pass { position: relative; display: inline-flex; cursor: pointer; }
+.btn-confirm-pass input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.btn-confirm-pass-inner {
+font-family: 'DM Mono', monospace;
+font-size: 10px;
+letter-spacing: 0.02em;
+padding: 6px 13px;
+border-radius: 8px;
+background: rgba(107,165,133,0.1);
+color: var(--green);
+border: 1px solid rgba(107,165,133,0.4);
+transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.btn-confirm-pass-inner:hover { background: rgba(107,165,133,0.2); border-color: var(--green); }
+.btn-confirm-pass input:active ~ .btn-confirm-pass-inner { transform: scale(0.96); }
+.btn-confirm-pass input:focus-visible ~ .btn-confirm-pass-inner { outline: 2px solid var(--green); outline-offset: 2px; }
+
+/* quiet/tertiary actions — undo / ukloni upis */
+.btn-unenroll, .btn-undo {
+font-family: 'DM Mono', monospace;
+font-size: 9.5px;
+color: var(--subtext);
+background: none;
+border: none;
+cursor: pointer;
+padding: 2px 3px;
+margin-top: 1px;
+text-align: right;
+letter-spacing: 0.02em;
+user-select: none;
+transition: color 0.15s;
+}
+.btn-unenroll:hover, .btn-undo:hover { color: var(--red); text-decoration: underline; text-underline-offset: 2px; }
+.btn-unenroll:focus-visible, .btn-undo:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; border-radius: 3px; }
+
+/* elective chooser */
+.elective-chooser {
+display: none;
+flex-direction: column;
+gap: 5px;
+width: 100%;
+}
+.elective-chooser select {
+font-family: 'DM Mono', monospace;
+font-size: 10px;
+background: var(--surface);
+color: var(--white);
+border: 1px solid var(--border);
+border-radius: 7px;
+padding: 5px 22px 5px 9px;
+cursor: pointer;
+outline: none;
+width: 100%;
+appearance: none;
+-webkit-appearance: none;
+background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='6'><path d='M0 0L4 6L8 0Z' fill='%2385839a'/></svg>");
+background-repeat: no-repeat;
+background-position: right 8px center;
+transition: border-color 0.15s, box-shadow 0.15s;
+}
+.elective-chooser select { border-color: rgba(123,150,163,0.4); }
+.elective-chooser select:hover { border-color: var(--accent2); }
+.elective-chooser select:focus-visible { border-color: var(--accent2); box-shadow: 0 0 0 2px rgba(123,150,163,0.28); }
+.btn-confirm-elective {
+font-family: 'DM Mono', monospace;
+font-size: 10px;
+letter-spacing: 0.02em;
+background: linear-gradient(135deg, rgba(123,150,163,0.28), rgba(123,150,163,0.14));
+color: var(--white);
+border: 1px solid rgba(123,150,163,0.5);
+border-radius: 8px;
+padding: 5px 12px;
+cursor: pointer;
+font-weight: 500;
+align-self: flex-end;
+transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.btn-confirm-elective:hover { background: rgba(123,150,163,0.4); border-color: var(--accent2); }
+.btn-confirm-elective:active { transform: scale(0.96); }
+.btn-confirm-elective:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; }
+
+/* summary shown once a subject is marked passed */
+.passed-summary { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.passed-summary-item { font-size: 10px; color: var(--subtext); letter-spacing: 0.02em; }
+.passed-summary-grade { font-size: 11px; color: var(--accent); font-weight: 500; }
+
+/* footnote */
+.footnote { font-size: 10px; color: var(--muted); line-height: 1.8; }
+
+.loading-note { text-align: center; padding: 40px; color: var(--subtext); font-size: 12px; }
+
+/* ── E-INDEKS (online student index card) ── */
+.eindex-eyebrow {
+text-align: center;
+padding: 34px 24px 0;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+font-size: 9.5px;
+letter-spacing: 0.22em;
+text-transform: uppercase;
+color: var(--subtext);
+}
+.eindex-wrap {
+padding: 14px 24px 30px;
+display: flex;
+justify-content: center;
+border-bottom: 1px solid var(--border);
+}
+.eindex-card {
+position: relative;
+width: 100%;
+max-width: 720px;
+background:
+  radial-gradient(circle at 88% -12%, rgba(200,168,108,0.12), transparent 55%),
+  radial-gradient(1px 1px at 10% 15%, rgba(200,168,108,0.35) 0, transparent 60%),
+  radial-gradient(1px 1px at 90% 80%, rgba(200,168,108,0.25) 0, transparent 60%),
+  var(--card);
+border: 1px solid var(--border);
+border-radius: 16px;
+padding: 24px 26px;
+box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+display: flex;
+gap: 24px;
+align-items: flex-start;
+}
+.ritual-corner { position: absolute; width: 24px; height: 24px; border: 1px solid rgba(200,168,108,0.55); opacity: 0.85; }
+.ritual-corner.tl { top: 12px; left: 12px; border-right: none; border-bottom: none; border-top-left-radius: 6px; }
+.ritual-corner.tr { top: 12px; right: 12px; border-left: none; border-bottom: none; border-top-right-radius: 6px; }
+.ritual-corner.bl { bottom: 12px; left: 12px; border-right: none; border-top: none; border-bottom-left-radius: 6px; }
+.ritual-corner.br { bottom: 12px; right: 12px; border-left: none; border-top: none; border-bottom-right-radius: 6px; }
+.eindex-card .ritual-corner { border-color: rgba(200,168,108,0.4); width: 18px; height: 18px; }
+.eindex-photo-wrap {
+flex-shrink: 0;
+width: 118px;
+height: 150px;
+border-radius: 10px;
+overflow: hidden;
+position: relative;
+border: 1px solid rgba(200,168,108,0.45);
+box-shadow: 0 10px 26px rgba(0,0,0,0.45);
+}
+.eindex-photo-wrap img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+display: block;
+filter: grayscale(20%) sepia(12%) saturate(105%) contrast(1.04) brightness(0.95);
+}
+.eindex-photo-wrap::after {
+content: '';
+position: absolute;
+inset: 0;
+box-shadow: inset 0 0 20px 5px rgba(12,12,17,0.6);
+pointer-events: none;
+}
+.eindex-info { flex: 1; min-width: 0; }
+.eindex-top-row {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 10px;
+flex-wrap: wrap;
+margin-bottom: 12px;
+}
+.eindex-badge {
+font-size: 9px;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+color: var(--accent2);
+border: 1px solid rgba(123,150,163,0.35);
+background: rgba(123,150,163,0.08);
+padding: 3px 9px;
+border-radius: 20px;
+white-space: nowrap;
+}
+.eindex-number {
+font-family: 'DM Mono', monospace;
+font-size: 12px;
+letter-spacing: 0.03em;
+color: var(--accent);
+}
+.eindex-number span { color: var(--subtext); margin-right: 5px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+.eindex-name {
+font-family: 'Playfair Display', serif;
+font-size: 22px;
+font-weight: 900;
+color: var(--white);
+line-height: 1.2;
+margin-bottom: 3px;
+}
+.eindex-program {
+font-size: 11px;
+color: var(--subtext);
+letter-spacing: 0.01em;
+line-height: 1.5;
+margin-bottom: 16px;
+}
+.eindex-divider-strip {
+height: 1px;
+background: linear-gradient(90deg, transparent, var(--border), transparent);
+margin-bottom: 14px;
+}
+.eindex-fields {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 12px 20px;
+margin-bottom: 14px;
+}
+.eindex-field-lbl {
+font-size: 9px;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(--subtext);
+margin-bottom: 3px;
+}
+.eindex-field-val {
+font-size: 12px;
+color: var(--text-dim);
+font-family: 'DM Mono', monospace;
+letter-spacing: 0.01em;
+line-height: 1.4;
+}
+.eindex-foot-row {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 12px;
+}
+.eindex-barcode-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+.eindex-barcode { display: flex; gap: 1px; align-items: stretch; height: 22px; opacity: 0.75; }
+.eindex-barcode span { background: var(--accent2); display: block; }
+.eindex-barcode-num { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.14em; color: var(--muted); }
+.eindex-footnote { font-size: 9px; color: var(--muted); letter-spacing: 0.02em; }
+@media (max-width: 560px) {
+  .eindex-card { flex-direction: column; align-items: center; text-align: center; padding: 22px 18px; }
+  .eindex-top-row { justify-content: center; }
+  .eindex-fields { grid-template-columns: 1fr 1fr; text-align: left; }
+  .eindex-foot-row { flex-direction: column; gap: 8px; }
+}
+
+/* ── BACKUP / SHARE MENU (discreet, secondary) ── */
+#backup-menu-wrap { position: fixed; top: 16px; right: 16px; z-index: 500; }
+#backup-menu-btn {
+width: 30px; height: 30px;
+border-radius: 50%;
+background: var(--card);
+border: 1px solid var(--border);
+color: var(--subtext);
+font-size: 15px;
+line-height: 1;
+cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+transition: border-color 0.15s, color 0.15s;
+}
+#backup-menu-btn:hover { border-color: var(--accent2); color: var(--text); }
+#backup-menu-btn:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; }
+#backup-menu-panel {
+position: absolute;
+top: 38px; right: 0;
+min-width: 232px;
+background: var(--card);
+border: 1px solid var(--border);
+border-radius: 10px;
+padding: 6px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+display: flex;
+flex-direction: column;
+gap: 2px;
+}
+.menu-item {
+display: block;
+width: 100%;
+text-align: left;
+background: none;
+border: none;
+color: var(--text-dim);
+font-family: 'DM Mono', monospace;
+font-size: 11px;
+letter-spacing: 0.01em;
+padding: 8px 10px;
+border-radius: 6px;
+cursor: pointer;
+transition: background 0.15s, color 0.15s;
+}
+.menu-item:hover { background: rgba(200,168,108,0.08); color: var(--text); }
+.menu-item:focus-visible { outline: 2px solid var(--accent2); outline-offset: -2px; }
+.menu-divider { height: 1px; background: var(--border); margin: 4px 2px; }
+.menu-hint { font-size: 9px; color: var(--muted); padding: 2px 10px 6px; line-height: 1.5; }
+#backup-menu-panel[hidden], #share-link-box[hidden] { display: none; }
+#share-link-box { display: flex; gap: 6px; padding: 4px 6px 8px; }
+#share-link-input {
+flex: 1;
+min-width: 0;
+font-family: 'DM Mono', monospace;
+font-size: 9.5px;
+background: var(--surface);
+color: var(--subtext);
+border: 1px solid var(--border);
+border-radius: 6px;
+padding: 5px 7px;
+}
+#share-link-input:focus-visible { outline: 2px solid var(--accent2); outline-offset: 1px; }
+#btn-copy-link {
+font-family: 'DM Mono', monospace;
+font-size: 10px;
+background: rgba(200,168,108,0.14);
+color: var(--accent);
+border: 1px solid rgba(200,168,108,0.4);
+border-radius: 6px;
+padding: 5px 9px;
+cursor: pointer;
+white-space: nowrap;
+transition: background 0.15s, border-color 0.15s;
+}
+#btn-copy-link:hover { background: rgba(200,168,108,0.24); border-color: var(--accent); }
+#btn-copy-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+#btn-close-share {
+font-family: 'DM Mono', monospace;
+font-size: 11px;
+background: none;
+color: var(--subtext);
+border: 1px solid var(--border);
+border-radius: 6px;
+padding: 5px 8px;
+cursor: pointer;
+transition: color 0.15s, border-color 0.15s;
+}
+#btn-close-share:hover { color: var(--red); border-color: var(--red); }
+#btn-close-share:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+/* ── MOBILE (телефон) — исти изглед и функције, само прилагођен размак/величине ── */
+@media (max-width: 640px) {
+  body { font-size: 12px; padding-bottom: 100px; }
+  header { padding: 28px 14px 20px; }
+  .content { padding: 0 10px; }
+  .eindex-wrap { padding: 12px 10px 20px; }
+  .eindex-card { flex-direction: column; align-items: center; text-align: center; padding: 18px 14px; gap: 14px; }
+  .eindex-top-row { justify-content: center; }
+  .eindex-fields { grid-template-columns: 1fr 1fr; text-align: left; gap: 10px 14px; }
+  .eindex-foot-row { flex-direction: column; gap: 10px; }
+  #dashboard { padding: 12px 10px; }
+  .dash-card { min-width: 90px; padding: 8px 12px; }
+  .dash-card .num { font-size: 18px; }
+  .year-title { font-size: 15px; }
+  table { font-size: 11.5px; min-width: 620px; }
+  th, td { padding: 7px 8px; }
+  .actions { min-width: 150px; }
+  .btn-primary-pill, .btn-confirm-pass-inner, .btn-confirm-elective { padding: 8px 14px; font-size: 11px; }
+  .toggle-chip { padding: 6px 10px 6px 6px; }
+  .rok-select, .ocena-select, .elective-chooser select { padding: 7px 22px 7px 9px; font-size: 10.5px; }
+  #backup-menu-wrap { top: 10px; right: 10px; }
+  #backup-menu-btn { width: 34px; height: 34px; font-size: 17px; }
+  #backup-menu-panel { min-width: 200px; max-width: calc(100vw - 20px); }
+  #share-link-input { font-size: 9px; }
+}
+</style>
+
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="ico-sparkle" viewBox="0 0 24 24">
+      <path d="M12 1c.9 4.8 2.2 7.9 4.3 10 2.1 2.1 5.2 3.4 10 4.3-4.8.9-7.9 2.2-10 4.3-2.1 2.1-3.4 5.2-4.3 10-.9-4.8-2.2-7.9-4.3-10-2.1-2.1-5.2-3.4-10-4.3 4.8-.9 7.9-2.2 10-4.3 2.1-2.1 3.4-5.2 4.3-10Z"/>
+    </symbol>
+    <symbol id="ico-crescent" viewBox="0 0 24 24">
+      <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 1020.354 15.354Z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="backup-menu-wrap">
+  <button type="button" id="backup-menu-btn" aria-haspopup="true" aria-expanded="false" title="Резервна копија и дељење">⋯</button>
+  <div id="backup-menu-panel" hidden>
+    <button type="button" class="menu-item" id="btn-export">Извези резервну копију (.json)</button>
+    <button type="button" class="menu-item" id="btn-import">Увези резервну копију</button>
+    <input type="file" id="import-file-input" accept="application/json" hidden>
+    <div class="menu-divider"></div>
+    <button type="button" class="menu-item" id="btn-share">Подели мој напредак</button>
+    <div id="share-link-box" hidden>
+      <input type="text" id="share-link-input" readonly aria-label="Линк за дељење">
+      <button type="button" id="btn-copy-link">Копирај линк</button>
+      <button type="button" id="btn-close-share" title="Сакриј линк">✕</button>
+    </div>
+    <div class="menu-hint">Линк за дељење учитава исти напредак на другом уређају (нпр. телефону) — тамо ће заменити оно што је локално сачувано на том уређају.</div>
+  </div>
+</div>
+
+<div class="eindex-wrap" style="padding-top:34px;">
+  <div class="eindex-card">
+    <span class="ritual-corner tl"></span>
+    <span class="ritual-corner tr"></span>
+    <span class="ritual-corner bl"></span>
+    <span class="ritual-corner br"></span>
+    <div class="eindex-photo-wrap">
+      <img src="data:image/jpeg;base64,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" alt="Драгана Плазинић">
+    </div>
+    <div class="eindex-info">
+      <div class="eindex-top-row">
+        <span class="eindex-badge"><svg class="glyph-svg moon-tone" width="9" height="9" style="margin-right:4px;"><use href="#ico-crescent"></use></svg>Електронски индекс</span>
+        <span class="eindex-number"><span>Бр.</span>1109/24</span>
+      </div>
+      <div class="eindex-name">Драгана Плазинић</div>
+      <div class="eindex-program">Основне академске студије политикологије</div>
+      <div class="eindex-divider-strip"></div>
+      <div class="eindex-fields">
+        <div>
+          <div class="eindex-field-lbl">Факултет</div>
+          <div class="eindex-field-val">Факултет политичких наука</div>
+        </div>
+        <div>
+          <div class="eindex-field-lbl">Датум рођења</div>
+          <div class="eindex-field-val">3.5.1996.</div>
+        </div>
+        <div>
+          <div class="eindex-field-lbl">Акредитација</div>
+          <div class="eindex-field-val">2022</div>
+        </div>
+        <div>
+          <div class="eindex-field-lbl">Статус</div>
+          <div class="eindex-field-val" style="color:var(--green)">Активан студент</div>
+        </div>
+      </div>
+      <div class="eindex-foot-row">
+        <div class="eindex-barcode-wrap">
+          <div class="eindex-barcode"><span style="width:3px"></span><span style="width:1px"></span><span style="width:1px"></span><span style="width:3px"></span><span style="width:1px"></span><span style="width:1px"></span><span style="width:1px"></span><span style="width:1px"></span><span style="width:3px"></span><span style="width:1px"></span><span style="width:3px"></span><span style="width:3px"></span><span style="width:2px"></span><span style="width:1px"></span><span style="width:2px"></span><span style="width:2px"></span><span style="width:1px"></span><span style="width:1px"></span><span style="width:1px"></span><span style="width:1px"></span><span style="width:1px"></span><span style="width:2px"></span><span style="width:2px"></span><span style="width:1px"></span><span style="width:2px"></span><span style="width:1px"></span><span style="width:3px"></span><span style="width:3px"></span><span style="width:3px"></span><span style="width:2px"></span><span style="width:2px"></span><span style="width:1px"></span><span style="width:2px"></span><span style="width:2px"></span><span style="width:1px"></span><span style="width:1px"></span><span style="width:1px"></span><span style="width:3px"></span><span style="width:2px"></span><span style="width:1px"></span><span style="width:1px"></span><span style="width:1px"></span><span style="width:1px"></span><span style="width:1px"></span><span style="width:1px"></span><span style="width:1px"></span></div>
+          <div class="eindex-barcode-num">0305996787821</div>
+        </div>
+        <div class="eindex-footnote">важи уз лични податак о напретку студија</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STICKY DASHBOARD -->
+<div id="dashboard">
+  <div class="dash-row">
+    <div class="dash-group">
+      <div class="dash-card">
+        <div class="num num-total">240</div>
+        <div class="lbl">Укупно за диплому</div>
+      </div>
+      <div class="dash-card">
+        <div class="num num-ok" id="d-polozeno">0</div>
+        <div class="lbl">Освојено ЕСПБ</div>
+      </div>
+      <div class="dash-card">
+        <div class="num num-fali" id="d-fali">240</div>
+        <div class="lbl">Фали ЕСПБ</div>
+      </div>
+    </div>
+    <div class="dash-divider"></div>
+    <div class="dash-group">
+      <div class="dash-card">
+        <div class="num num-purple" id="d-preostalo">0</div>
+        <div class="lbl">Уписано / неположено</div>
+      </div>
+      <div class="dash-card">
+        <div class="num num-na" id="d-neupisano">—</div>
+        <div class="lbl">Није уписано</div>
+      </div>
+    </div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="prog-bar" style="width:0%"></div>
+    </div>
+    <div class="progress-lbl" id="prog-lbl">0 / 240 ЕСПБ · 0%</div>
+  </div>
+  <div class="dash-avg-wrap">
+    <div class="dash-card">
+      <div class="num num-avg" id="d-prosek">—</div>
+      <div class="lbl">Просечна оцена</div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ══ ПРВА ГОДИНА ══ -->
+<div class="year-block" data-year="1" style="margin-top:24px;">
+  <div class="year-title">Прва година <span style="font-size:11px;color:var(--subtext);font-family:'DM Mono'">сем. 1–2</span> <span class="year-ratio" id="yratio-1"></span> <span class="year-status" id="ystatus-1"></span></div>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Предмет</th><th class="c">Сем.</th><th class="c">Тип</th><th class="c">ЕСПБ</th><th class="c">Оцена</th><th class="c">Статус</th><th class="c">Акција</th></tr></thead>
+    <tbody>
+      <tr data-id="akad-vest" data-year="1" data-espb="4" data-state="not-enrolled">
+        <td><div class="subject-name">Академске вештине</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">1</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">4</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="akad-vest"></div></td>
+      </tr>
+      <tr data-id="ist-antic" data-year="1" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Историја античке и средњовековне политичке мисли</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">1</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="ist-antic"></div></td>
+      </tr>
+      <tr data-id="pol-ek" data-year="1" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Политичка економија</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">1</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="pol-ek"></div></td>
+      </tr>
+      <tr data-id="soc" data-year="1" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Социологија</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">1</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="soc"></div></td>
+      </tr>
+      <tr data-id="sav-pol-ist" data-year="1" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Савремена политичка историја</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">1</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="sav-pol-ist"></div></td>
+      </tr>
+      <tr data-id="uvod-pt" data-year="1" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Увод у политичку теорију</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">1</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="uvod-pt"></div></td>
+      </tr>
+      <tr class="sem-divider" data-id="ist-moderne" data-year="1" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Историја модерне политичке мисли</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">2</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="ist-moderne"></div></td>
+      </tr>
+      <tr data-id="osnovi-prava" data-year="1" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Основи права</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">2</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="osnovi-prava"></div></td>
+      </tr>
+      <tr data-id="sav-pol-ek" data-year="1" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Савремена политичка економија</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">2</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="sav-pol-ek"></div></td>
+      </tr>
+      <tr data-id="fil" data-year="1" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Филозофија</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">2</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="fil"></div></td>
+      </tr>
+      <tr data-id="strani-jezik-1" data-year="1" data-espb="4" data-state="not-enrolled">
+        <td><div class="subject-name">Енглески језик 1 (Б2/а)</div><div class="subject-sub">страни језик — двосеместрални, полаже се на крају</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">1–2</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">изборни</td><td class="espb-col">4</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="strani-jezik-1"></div></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- ══ ДРУГА ГОДИНА ══ -->
+<div class="year-block" data-year="2">
+  <div class="year-title">Друга година <span style="font-size:11px;color:var(--subtext);font-family:'DM Mono'">сем. 3–4</span> <span class="year-ratio" id="yratio-2"></span> <span class="year-status" id="ystatus-2"></span></div>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Предмет</th><th class="c">Сем.</th><th class="c">Тип</th><th class="c">ЕСПБ</th><th class="c">Оцена</th><th class="c">Статус</th><th class="c">Акција</th></tr></thead>
+    <tbody>
+      <tr data-id="ek-sis-srb" data-year="2" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Економски систем Србије</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">3</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="ek-sis-srb"></div></td>
+      </tr>
+      <tr data-id="pol-sis-srb" data-year="2" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Политички систем Србије</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">3</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="pol-sis-srb"></div></td>
+      </tr>
+      <tr data-id="sav-drz" data-year="2" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Савремена држава</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">3</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="sav-drz"></div></td>
+      </tr>
+      <tr data-id="upor-pol" data-year="2" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Упоредна политика</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">3</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="upor-pol"></div></td>
+      </tr>
+      <tr data-id="izb-blok1" data-year="2" data-espb="4" data-state="not-enrolled">
+        <td><div class="subject-name">Историја балканских односа</div><div class="subject-sub">Изборни блок 1</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">3</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">изборни</td><td class="espb-col">4</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="izb-blok1"></div></td>
+      </tr>
+      <tr class="sem-divider" data-id="pol-soc" data-year="2" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Политичка социологија</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">4</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="pol-soc"></div></td>
+      </tr>
+      <tr data-id="pol-sis-eu" data-year="2" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Политички систем Европске уније</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">4</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="pol-sis-eu"></div></td>
+      </tr>
+      <tr data-id="ist-srp-pol" data-year="2" data-espb="4" data-state="not-enrolled">
+        <td><div class="subject-name">Историја српске политичке мисли</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">4</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">4</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="ist-srp-pol"></div></td>
+      </tr>
+      <tr data-id="sav-pol-teor" data-year="2" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Савремена политичка теорија</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">4</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="sav-pol-teor"></div></td>
+      </tr>
+      <tr data-id="izb-blok2" data-year="2" data-espb="5" data-state="not-enrolled">
+        <td><div class="subject-name">Наука о организацији и управљању</div><div class="subject-sub">Изборни блок 2</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">4</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">изборни</td><td class="espb-col">5</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="izb-blok2"></div></td>
+      </tr>
+      <tr data-id="strani-jezik-2" data-year="2" data-espb="4" data-state="not-enrolled">
+        <td><div class="subject-name">Енглески језик 2 (Б2/б)</div><div class="subject-sub">страни језик — двосеместрални, полаже се на крају</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">3–4</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">изборни</td><td class="espb-col">4</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="strani-jezik-2"></div></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- ══ ТРЕЋА ГОДИНА ══ -->
+<div class="year-block" data-year="3">
+  <div class="year-title">Трећа година <span style="font-size:11px;color:var(--subtext);font-family:'DM Mono'">сем. 5–6</span> <span class="year-ratio" id="yratio-3"></span> <span class="year-status" id="ystatus-3"></span></div>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Предмет</th><th class="c">Сем.</th><th class="c">Тип</th><th class="c">ЕСПБ</th><th class="c">Оцена</th><th class="c">Статус</th><th class="c">Акција</th></tr></thead>
+    <tbody>
+      <tr data-id="medjunarodni" data-year="3" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Међународни односи</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">5</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="medjunarodni"></div></td>
+      </tr>
+      <tr data-id="antropologija" data-year="3" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Политичка антропологија и студије етницитета</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">5</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="antropologija"></div></td>
+      </tr>
+      <tr data-id="pol-soc-sav" data-year="3" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Политичка социологија савременог друштва</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">5</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="pol-soc-sav"></div></td>
+      </tr>
+      <tr data-id="izb-blok3a" data-year="3" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name" id="izb-blok3a-name">Изборни предмет 1</div><div class="subject-sub">Изборни блок 3</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">5</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">изборни</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="izb-blok3a" data-elective-opts="Политичко комуницирање|Политичко понашање|Социјална онтологија|Теорија игара|Управљање тимовима, пројектима и ИТ"></div></td>
+      </tr>
+      <tr data-id="izb-blok3b" data-year="3" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name" id="izb-blok3b-name">Изборни предмет 2</div><div class="subject-sub">Изборни блок 3</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">5</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">изборни</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="izb-blok3b" data-elective-opts="Политичко комуницирање|Политичко понашање|Социјална онтологија|Теорија игара|Управљање тимовима, пројектима и ИТ"></div></td>
+      </tr>
+      <tr class="sem-divider" data-id="javna-uprava" data-year="3" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Јавна управа</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">6</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="javna-uprava"></div></td>
+      </tr>
+      <tr data-id="lok-sam" data-year="3" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Локална самоуправа</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">6</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="lok-sam"></div></td>
+      </tr>
+      <tr data-id="metodologija" data-year="3" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Методологија политичких наука</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">6</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="metodologija"></div></td>
+      </tr>
+      <tr data-id="pol-religije" data-year="3" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Политикологија религије</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">6</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="pol-religije"></div></td>
+      </tr>
+      <tr data-id="izb-blok4" data-year="3" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Ауторитарни режими</div><div class="subject-sub">Изборни блок 4</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">6</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">изборни</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="izb-blok4"></div></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- ══ ЧЕТВРТА ГОДИНА ══ -->
+<div class="year-block" data-year="4">
+  <div class="year-title">Четврта година <span style="font-size:11px;color:var(--subtext);font-family:'DM Mono'">сем. 7–8</span> <span class="year-ratio" id="yratio-4"></span> <span class="year-status" id="ystatus-4"></span></div>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Предмет</th><th class="c">Сем.</th><th class="c">Тип</th><th class="c">ЕСПБ</th><th class="c">Оцена</th><th class="c">Статус</th><th class="c">Акција</th></tr></thead>
+    <tbody>
+      <tr data-id="jav-pol" data-year="4" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Јавне политике</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">7</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="jav-pol"></div></td>
+      </tr>
+      <tr data-id="pol-kult" data-year="4" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Политичка култура и политички поредак</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">7</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="pol-kult"></div></td>
+      </tr>
+      <tr data-id="partije" data-year="4" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Партије и партијски системи</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">7</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="partije"></div></td>
+      </tr>
+      <tr data-id="strucna-praksa" data-year="4" data-espb="3" data-state="not-enrolled">
+        <td><div class="subject-name">Стручна пракса</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">7</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">3</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="strucna-praksa"></div></td>
+      </tr>
+      <tr data-id="izb-blok5" data-year="4" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name" id="izb-blok5-name">Изборни предмет</div><div class="subject-sub">Изборни блок 5</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">7</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">изборни</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="izb-blok5" data-elective-opts="Квалитативни методи у политичким наукама|Квантитативни методи у политичким наукама"></div></td>
+      </tr>
+      <tr data-id="izb-blok6" data-year="4" data-espb="5" data-state="not-enrolled">
+        <td><div class="subject-name" id="izb-blok6-name">Изборни предмет</div><div class="subject-sub">Изборни блок 6</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">7</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">изборни</td><td class="espb-col">5</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="izb-blok6" data-elective-opts="Реторика (5 ЕСПБ)|Системи социјалне сигурности (5 ЕСПБ)|Анализа политичких процеса (6 ЕСПБ)|Институционална економија (6 ЕСПБ)|Политичка економија Кине (6 ЕСПБ)|Увод у спољну политику и спољнополитичку анализу (6 ЕСПБ)|Феноменологија насиља (6 ЕСПБ)"></div></td>
+      </tr>
+      <tr class="sem-divider" data-id="verske" data-year="4" data-espb="4" data-state="not-enrolled">
+        <td><div class="subject-name">Верске заједнице у Србији</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">8</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">4</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="verske"></div></td>
+      </tr>
+      <tr data-id="izbori" data-year="4" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Избори и изборни системи</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">8</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="izbori"></div></td>
+      </tr>
+      <tr data-id="soc-ek" data-year="4" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name">Социјална и политичка екологија</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">8</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">обавезан</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="soc-ek"></div></td>
+      </tr>
+      <tr data-id="izb-blok7a" data-year="4" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name" id="izb-blok7a-name">Изборни предмет 1</div><div class="subject-sub">Изборни блок 7</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">8</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">изборни</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="izb-blok7a" data-elective-opts="Заштита деце у миграцијама|Компаративна јавна управа|Култура и политика људских права|Политички маркетинг|Политичке установе и политички живот на Балкану"></div></td>
+      </tr>
+      <tr data-id="izb-blok7b" data-year="4" data-espb="6" data-state="not-enrolled">
+        <td><div class="subject-name" id="izb-blok7b-name">Изборни предмет 2</div><div class="subject-sub">Изборни блок 7</div></td>
+        <td class="espb-col" style="color:var(--accent2);font-size:10.5px;">8</td>
+        <td class="espb-col" style="color:var(--subtext);font-size:10px;">изборни</td><td class="espb-col">6</td><td class="ocena-col">—</td>
+        <td style="text-align:center"><span class="badge badge-na"><span class="dot">●</span> није уписан</span></td>
+        <td><div class="actions" data-id="izb-blok7b" data-elective-opts="Заштита деце у миграцијама|Компаративна јавна управа|Култура и политика људских права|Политички маркетинг|Политичке установе и политички живот на Балкану"></div></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+const ROKS = ['Јануар','Фебруар','Март','Април','Мај','Јун','Јул','Август','Септембар','Октобар','Новембар','Децембар'];
+const OCENE = [6,7,8,9,10];
+const ACADEMIC_YEARS = ['2015/16','2016/17','2017/18','2018/19','2019/20','2020/21','2021/22','2022/23','2023/24','2024/25','2025/26','2026/27','2027/28','2028/29','2029/30'];
+const BASE_PASSED = 0;
+const STORAGE_KEY = 'subject-state';
+
+/*
+  Model stanja po predmetu — cuva se u localStorage (radi u svakom
+  browseru, i offline, i kad se stranica hostuje preko GitHub Pages).
+
+  state[id] = {
+    enrolled: bool,
+    uslov: bool,
+    passed: bool,
+    rok: string|null,
+    grade: number|null,
+    academicYear: string|null,
+    chosenName: string|undefined
+  }
+*/
+let state = {};
+
+async function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      state = JSON.parse(raw);
+    }
+  } catch (e) {
+    // localStorage nedostupan (npr. privatni mod bez podrske) ili
+    // sacuvani podaci ostecceni — pocni prazno umesto da pukne app
+    console.error('Грешка при учитавању стања:', e);
+    state = {};
+  }
+}
+
+async function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    return true;
+  } catch (e) {
+    console.error('Грешка при чувању стања:', e);
+    return null;
+  }
+}
+
+// Увек враћа потпун, нормализован објекат стања (никад undefined поља)
+// academicYear је backward-compatible: старе ставке без овог поља враћају null
+function getRowState(id) {
+  const s = state[id];
+  return {
+    enrolled: s ? !!s.enrolled : false,
+    uslov: s ? !!s.uslov : false,
+    passed: s ? !!s.passed : false,
+    rok: s ? (s.rok || null) : null,
+    grade: s ? (s.grade || null) : null,
+    academicYear: s ? (s.academicYear || null) : null,
+    chosenName: s ? s.chosenName : undefined
+  };
+}
+
+function ensureState(id) {
+  if (!state[id]) {
+    state[id] = { enrolled: false, uslov: false, passed: false, rok: null, grade: null, academicYear: null };
+  }
+  if (state[id].academicYear === undefined) {
+    // backward-compat: старе ставке без academicYear поља
+    state[id].academicYear = null;
+  }
+  return state[id];
+}
+
+// DERIVED STATUS: statuse se uvek racuna iz enrolled/uslov/passed, nikad ne cuva kao posebna vrednost
+function computeStatus(s) {
+  if (s.passed) {
+    return { text: '<span class="glyph-star"><svg class="glyph-svg gold" width="9" height="9"><use href="#ico-sparkle"></use></svg></span>ПОЛОЖЕНО', cls: 'badge-passed', withDot: false };
+  }
+  if (s.enrolled && !s.uslov) {
+    return { text: 'УПИСАНО / БЕЗ УСЛОВА', cls: 'badge-enrolled-noconditions', withDot: false };
+  }
+  if (s.enrolled && s.uslov) {
+    return { text: 'УПИСАН / ОСТВАРЕН УСЛОВ', cls: 'badge-enrolled-condition', withDot: false };
+  }
+  if (!s.enrolled && s.uslov) {
+    return { text: 'НИЈЕ УПИСАН / ОСТВАРЕН УСЛОВ', cls: 'badge-pending', withDot: false };
+  }
+  return { text: 'НИЈЕ УПИСАН', cls: 'badge-na', withDot: true };
+}
+
+// Count ESPB / статус година
+function updateYearStatuses() {
+  [1,2,3,4].forEach(yr => {
+    const badge = document.getElementById('ystatus-' + yr);
+    if (!badge) return;
+    const rows = document.querySelectorAll(`tr[data-year="${yr}"]`);
+    if (!rows.length) return;
+
+    let allEnrolledOrPassed = true;
+    let allPassed = true;
+
+    rows.forEach(row => {
+      const id = row.dataset.id;
+      const s = getRowState(id);
+
+      if (s.passed) {
+        // положено рачуна и за "одслушано" и за "очишћено"
+      } else if (s.enrolled) {
+        allPassed = false;
+      } else {
+        allEnrolledOrPassed = false;
+        allPassed = false;
+      }
+    });
+
+    badge.innerHTML = '';
+    badge.className = 'year-status';
+    if (allPassed) {
+      badge.innerHTML = '<span class="glyph-star"><svg class="glyph-svg gold" width="11" height="11"><use href="#ico-sparkle"></use></svg></span> Очишћена година';
+      badge.classList.add('очишћена');
+    } else if (allEnrolledOrPassed) {
+      badge.textContent = 'Одслушана година';
+      badge.classList.add('odslušana');
+    }
+  });
+}
+
+// Однос положених ЕСПБ / укупно ЕСПБ те године, испод наслова сваке године
+function updateYearRatios() {
+  [1,2,3,4].forEach(yr => {
+    const ratioEl = document.getElementById('yratio-' + yr);
+    if (!ratioEl) return;
+    const rows = document.querySelectorAll(`tr[data-year="${yr}"]`);
+    let total = 0, passed = 0;
+    rows.forEach(row => {
+      const espb = parseInt(row.dataset.espb) || 0;
+      total += espb;
+      const s = getRowState(row.dataset.id);
+      if (s.passed) passed += espb;
+    });
+    const pct = total ? Math.round(passed / total * 100) : 0;
+    ratioEl.textContent = `${passed} / ${total} ЕСПБ · ${pct}%`;
+  });
+}
+
+function recalc() {
+  let passed = BASE_PASSED;
+  let enrolled_pending = 0;
+  let not_enrolled = 0;
+
+  let gradeSum = 0;
+  let gradeCount = 0;
+
+  document.querySelectorAll('tr[data-id]').forEach(row => {
+    const id = row.dataset.id;
+    const espb = parseInt(row.dataset.espb);
+    const s = getRowState(id);
+
+    if (s.passed) {
+      passed += espb;
+      if (s.grade) { gradeSum += s.grade; gradeCount++; }
+    } else if (s.enrolled) {
+      enrolled_pending += espb;
+    } else {
+      not_enrolled += espb;
+    }
+  });
+
+  document.getElementById('d-polozeno').textContent = passed;
+  document.getElementById('d-preostalo').textContent = enrolled_pending;
+  document.getElementById('d-neupisano').textContent = not_enrolled;
+  document.getElementById('d-fali').textContent = Math.max(240 - passed, 0);
+
+  const prosekEl = document.getElementById('d-prosek');
+  if (gradeCount > 0) {
+    prosekEl.textContent = (gradeSum / gradeCount).toFixed(2);
+  } else {
+    prosekEl.textContent = '—';
+  }
+
+  const pct = (passed / 240 * 100).toFixed(1);
+  const progWrap = document.querySelector('.progress-wrap');
+  const progLbl = document.getElementById('prog-lbl');
+  document.getElementById('prog-bar').style.width = pct + '%';
+  if (passed >= 240) {
+    progWrap.classList.add('complete');
+    progLbl.innerHTML = passed + ' / 240 ЕСПБ · ' + pct + '% <span class="glyph-star"><svg class="glyph-svg gold glow" width="12" height="12"><use href="#ico-sparkle"></use></svg></span>';
+  } else {
+    progWrap.classList.remove('complete');
+    progLbl.textContent = passed + ' / 240 ЕСПБ · ' + pct + '%';
+  }
+
+  updateYearStatuses();
+  updateYearRatios();
+}
+
+function buildActions(actionsDiv) {
+  const id = actionsDiv.dataset.id;
+  if (!id) return;
+
+  const electiveOpts = actionsDiv.dataset.electiveOpts;
+  const s = getRowState(id);
+
+  // ако је положено — приказујемо само сажетак и дугме за поништавање
+  if (s.passed) {
+    const rok = s.rok || '—';
+    const grade = s.grade || null;
+    const academicYear = s.academicYear || '—';
+    actionsDiv.innerHTML = `
+      <div class="passed-summary">
+        <span class="passed-summary-item">${rok} · ${academicYear}</span>
+        ${grade ? `<span class="passed-summary-grade">оцена ${grade}</span>` : ''}
+      </div>
+      <div class="btn-undo" onclick="undoPass('${id}')">↩ поништи положено</div>
+    `;
+    return;
+  }
+
+  let html = '';
+
+  // ВАЖНО: тогл "остварен услов" мора бити видљив и доступан ОДМАХ,
+  // независно од тога да ли је предмет уписан или не.
+  html += `
+    <label class="toggle-chip" for="uslov-${id}">
+      <input type="checkbox" id="uslov-${id}" ${s.uslov ? 'checked' : ''} onchange="toggleUslov('${id}', this.checked)">
+      <span class="toggle-chip-mark"></span>
+      <span class="toggle-chip-text">остварен услов</span>
+    </label>
+  `;
+
+  if (!s.enrolled) {
+    if (electiveOpts) {
+      const opts = electiveOpts.split('|');
+      html += `
+        <div class="elective-chooser" id="ec-${id}" style="display:flex;">
+          <select id="esel-${id}">
+            <option value="">— одабери предмет —</option>
+            ${opts.map(o => `<option value="${o}">${o}</option>`).join('')}
+          </select>
+          <button class="btn-confirm-elective" onclick="confirmElective('${id}')">Упиши</button>
+        </div>
+      `;
+    } else {
+      html += `<button class="btn-primary-pill" onclick="enrollSubject('${id}')">Упиши</button>`;
+    }
+  } else {
+    html += `
+      <select class="ocena-select" id="ocena-${id}">
+        <option value="">— оцена —</option>
+        ${OCENE.map(o => `<option value="${o}">${o}</option>`).join('')}
+      </select>
+      <select class="rok-select" id="rok-${id}">
+        <option value="">— рок (обавезно) —</option>
+        ${ROKS.map(r => `<option value="${r}">${r}</option>`).join('')}
+      </select>
+      <select class="rok-select" id="ay-${id}">
+        <option value="">— академска година (обавезно) —</option>
+        ${ACADEMIC_YEARS.map(y => `<option value="${y}">${y}</option>`).join('')}
+      </select>
+      <label class="btn-confirm-pass" for="chk-${id}">
+        <input type="checkbox" id="chk-${id}" onchange="togglePassed('${id}', this.checked)">
+        <span class="btn-confirm-pass-inner">Означи као положено</span>
+      </label>
+      <div class="btn-unenroll" onclick="unenrollSubject('${id}')">↩ уклони упис</div>
+    `;
+  }
+
+  actionsDiv.innerHTML = html;
+}
+
+async function toggleUslov(id, checked) {
+  const s = ensureState(id);
+  s.uslov = checked;
+  await saveState();
+  recalc();
+  updateRowVisual(id);
+  // не морамо да rebuild-ујемо actions jer se samo status menja
+}
+
+function spawnStarPop(row) {
+  if (!row) return;
+  const cell = row.querySelector('td:nth-child(6) .badge');
+  if (!cell) return;
+  const star = document.createElement('span');
+  star.className = 'star-pop';
+  star.innerHTML = '<svg class="glyph-svg gold" width="13" height="13"><use href="#ico-sparkle"></use></svg>';
+  cell.appendChild(star);
+  setTimeout(() => star.remove(), 900);
+}
+
+async function togglePassed(id, checked) {
+  const row = document.querySelector(`tr[data-id="${id}"]`);
+  const s = ensureState(id);
+
+  if (checked) {
+    const rokSel = document.getElementById('rok-' + id);
+    const ocenaSel = document.getElementById('ocena-' + id);
+    const aySel = document.getElementById('ay-' + id);
+    const rok = rokSel ? rokSel.value : '';
+    const grade = ocenaSel ? parseInt(ocenaSel.value) : NaN;
+    const academicYear = aySel ? aySel.value : '';
+
+    if (!rok) {
+      alert('Прво изабери рок пре него што означиш да је предмет положен.');
+      const chk = document.getElementById('chk-' + id);
+      if (chk) chk.checked = false;
+      return;
+    }
+
+    if (!grade || isNaN(grade)) {
+      alert('Прво изабери оцену пре него што означиш да је предмет положен.');
+      const chk = document.getElementById('chk-' + id);
+      if (chk) chk.checked = false;
+      return;
+    }
+
+    if (!academicYear) {
+      alert('Прво изабери академску годину пре него што означиш да је предмет положен.');
+      const chk = document.getElementById('chk-' + id);
+      if (chk) chk.checked = false;
+      return;
+    }
+
+    // passed=true има приоритет над свим осталим — enrolled/uslov ostaju zapamceni ispod
+    s.passed = true;
+    s.rok = rok;
+    s.grade = grade;
+    s.academicYear = academicYear;
+    await saveState();
+    recalc();
+    updateRowVisual(id);
+    spawnStarPop(row);
+    buildActions(document.querySelector(`.actions[data-id="${id}"]`));
+  } else {
+    s.passed = false;
+    await saveState();
+    recalc();
+    updateRowVisual(id);
+    buildActions(document.querySelector(`.actions[data-id="${id}"]`));
+  }
+}
+
+async function undoPass(id) {
+  const s = ensureState(id);
+  s.passed = false;
+  s.rok = null;
+  s.grade = null;
+  s.academicYear = null;
+  // enrolled i uslov ostaju kakvi su bili — nezavisne informacije se ne brisu
+  await saveState();
+  recalc();
+  updateRowVisual(id);
+  buildActions(document.querySelector(`.actions[data-id="${id}"]`));
+}
+
+async function enrollSubject(id) {
+  const s = ensureState(id);
+  s.enrolled = true;
+  await saveState();
+  recalc();
+  updateRowVisual(id);
+  buildActions(document.querySelector(`.actions[data-id="${id}"]`));
+}
+
+async function unenrollSubject(id) {
+  const s = ensureState(id);
+  s.enrolled = false;
+  s.rok = null;
+  s.grade = null;
+  // uslov OSTAJE nepromenjen — enrollment i uslov su nezavisni
+
+  const nameEl = document.getElementById(id + '-name');
+  if (nameEl && nameEl.dataset.original) {
+    nameEl.textContent = nameEl.dataset.original;
+  }
+  delete s.chosenName;
+
+  await saveState();
+  recalc();
+  updateRowVisual(id);
+  buildActions(document.querySelector(`.actions[data-id="${id}"]`));
+}
+
+async function confirmElective(id) {
+  const sel = document.getElementById('esel-' + id);
+  if (!sel || !sel.value) return;
+  const chosen = sel.value;
+  const nameEl = document.getElementById(id + '-name');
+  if (nameEl) {
+    if (!nameEl.dataset.original) nameEl.dataset.original = nameEl.textContent;
+    nameEl.textContent = chosen;
+  }
+  const s = ensureState(id);
+  s.enrolled = true;
+  s.chosenName = chosen;
+  await saveState();
+  recalc();
+  updateRowVisual(id);
+  buildActions(document.querySelector(`.actions[data-id="${id}"]`));
+}
+
+function updateRowVisual(id) {
+  const row = document.querySelector(`tr[data-id="${id}"]`);
+  if (!row) return;
+  // STATUS je 6. kolona (Predmet, Sem., Tip, ESPB, Ocena, Status, Akcija)
+  const badgeCell = row.querySelector('td:nth-child(6)');
+  const ocenaCell = row.querySelector('td.ocena-col');
+  const s = getRowState(id);
+
+  row.classList.remove('row-passed', 'row-enrolled');
+
+  const status = computeStatus(s);
+  const dotHtml = status.withDot ? '<span class="dot">●</span> ' : '';
+  badgeCell.innerHTML = `<span class="badge ${status.cls}">${dotHtml}${status.text}</span>`;
+
+  if (s.passed) {
+    row.classList.add('row-passed');
+    if (ocenaCell) ocenaCell.textContent = s.grade || '—';
+  } else if (s.enrolled) {
+    row.classList.add('row-enrolled');
+    if (ocenaCell) ocenaCell.textContent = '—';
+  } else {
+    if (ocenaCell) ocenaCell.textContent = '—';
+  }
+}
+
+function applyStoredState() {
+  Object.keys(state).forEach(id => {
+    const row = document.querySelector(`tr[data-id="${id}"]`);
+    if (!row) return;
+    const s = getRowState(id);
+    if (s.chosenName) {
+      const nameEl = document.getElementById(id + '-name');
+      if (nameEl) {
+        if (!nameEl.dataset.original) nameEl.dataset.original = nameEl.textContent;
+        nameEl.textContent = s.chosenName;
+      }
+    }
+    updateRowVisual(id);
+  });
+}
+
+function initActions() {
+  document.querySelectorAll('.actions[data-id]').forEach(div => {
+    buildActions(div);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BACKUP (export/import) + SHARE (link koji na drugom uredjaju
+   ucitava isto stanje i nastavlja da se koristi normalno)
+   ══════════════════════════════════════════════════════════════ */
+
+// UTF-8 bezbedan base64 (da Ćirилица u nazivima izbornih predmeta ne puca kodiranje)
+function utf8ToB64(str) {
+  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (_, p1) {
+    return String.fromCharCode('0x' + p1);
+  }));
+}
+function b64ToUtf8(b64) {
+  return decodeURIComponent(atob(b64).split('').map(function (c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+}
+
+// Kompaktan oblik state-a za share link (kraći URL) — koristi samo popunjena polja
+function compactStateForShare(st) {
+  const out = {};
+  Object.keys(st).forEach(id => {
+    const s = getRowStateFrom(st, id);
+    const c = {};
+    if (s.enrolled) c.e = 1;
+    if (s.uslov) c.u = 1;
+    if (s.passed) c.p = 1;
+    if (s.rok) c.r = s.rok;
+    if (s.grade) c.g = s.grade;
+    if (s.academicYear) c.y = s.academicYear;
+    if (s.chosenName) c.c = s.chosenName;
+    if (Object.keys(c).length) out[id] = c;
+  });
+  return out;
+}
+function getRowStateFrom(st, id) {
+  const s = st[id];
+  return {
+    enrolled: s ? !!s.enrolled : false,
+    uslov: s ? !!s.uslov : false,
+    passed: s ? !!s.passed : false,
+    rok: s ? (s.rok || null) : null,
+    grade: s ? (s.grade || null) : null,
+    academicYear: s ? (s.academicYear || null) : null,
+    chosenName: s ? s.chosenName : undefined
+  };
+}
+function expandShareState(compact) {
+  const out = {};
+  Object.keys(compact).forEach(id => {
+    const c = compact[id] || {};
+    out[id] = {
+      enrolled: !!c.e,
+      uslov: !!c.u,
+      passed: !!c.p,
+      rok: c.r || null,
+      grade: c.g || null,
+      academicYear: c.y || null,
+      chosenName: c.c || undefined
+    };
+  });
+  return out;
+}
+
+// ── EXPORT BACKUP ──
+function exportBackup() {
+  const payload = {
+    app: 'politikologija-tracker',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    state: state
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `politikologija-backup-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// ── IMPORT BACKUP (bezbedno — validacija pre bilo kakve izmene) ──
+function extractStateFromBackup(parsed) {
+  if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) &&
+      parsed.state && typeof parsed.state === 'object' && !Array.isArray(parsed.state)) {
+    return parsed.state;
+  }
+  return parsed;
+}
+function isValidBackupShape(obj) {
+  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return false;
+  for (const id of Object.keys(obj)) {
+    const v = obj[id];
+    if (!v || typeof v !== 'object' || Array.isArray(v)) return false;
+    if ('enrolled' in v && typeof v.enrolled !== 'boolean') return false;
+    if ('uslov' in v && typeof v.uslov !== 'boolean') return false;
+    if ('passed' in v && typeof v.passed !== 'boolean') return false;
+  }
+  return true;
+}
+
+async function handleImportFile(file) {
+  let text;
+  try {
+    text = await file.text();
+  } catch (e) {
+    alert('Фајл није могуће прочитати. Import није извршен, твоји подаци нису промењени.');
+    return;
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e) {
+    alert('Фајл није валидан JSON. Import није извршен, твоји подаци нису промењени.');
+    return;
+  }
+
+  const candidateState = extractStateFromBackup(parsed);
+  if (!isValidBackupShape(candidateState)) {
+    alert('Овај фајл не одговара структури података ове апликације. Import није извршен, твоји подаци нису промењени.');
+    return;
+  }
+
+  const confirmed = confirm('Import ће заменити тренутно сачувано стање. Наставити?');
+  if (!confirmed) return;
+
+  state = candidateState;
+  const saved = await saveState();
+  fullRerenderFromState();
+  closeBackupMenu();
+  alert('Подаци су успешно увезени.');
+}
+
+// Ponovo iscrtava kompletan UI na osnovu trenutnog `state` (koristi se posle importa i posle ucitavanja share linka)
+function fullRerenderFromState() {
+  // resetuj imena izbornih predmeta na originale pre ponovnog primenjivanja chosenName
+  document.querySelectorAll('[id$="-name"]').forEach(nameEl => {
+    if (nameEl.dataset.original) nameEl.textContent = nameEl.dataset.original;
+  });
+  applyStoredState();
+  document.querySelectorAll('tr[data-id]').forEach(row => updateRowVisual(row.dataset.id));
+  initActions();
+  recalc();
+}
+
+// ── SHARE LINK (nosi trenutno stanje; kad se otvori na drugom uredjaju, to stanje se ucitava kao lokalno) ──
+function buildShareLink() {
+  const compact = compactStateForShare(state);
+  const encoded = utf8ToB64(JSON.stringify(compact));
+  const url = new URL(window.location.href);
+  url.hash = '';
+  url.search = '';
+  return `${url.origin}${url.pathname}#share=${encoded}`;
+}
+
+function tryParseShareHash() {
+  try {
+    const hash = window.location.hash || '';
+    const m = hash.match(/share=([^&]+)/);
+    if (!m) return null;
+    const json = b64ToUtf8(decodeURIComponent(m[1]));
+    const compact = JSON.parse(json);
+    if (!compact || typeof compact !== 'object' || Array.isArray(compact)) return null;
+    return expandShareState(compact);
+  } catch (e) {
+    console.error('Неисправан share линк:', e);
+    return null;
+  }
+}
+
+function showShareLink() {
+  const link = buildShareLink();
+  const box = document.getElementById('share-link-box');
+  const input = document.getElementById('share-link-input');
+  if (!box || !input) return;
+  input.value = link;
+  box.hidden = false;
+  input.focus();
+  input.select();
+}
+
+function hideShareLink() {
+  const box = document.getElementById('share-link-box');
+  if (box) box.hidden = true;
+}
+
+function toggleShareLink() {
+  const box = document.getElementById('share-link-box');
+  if (!box) return;
+  if (box.hidden) {
+    showShareLink();
+  } else {
+    hideShareLink();
+  }
+}
+
+function copyShareLink() {
+  const input = document.getElementById('share-link-input');
+  if (!input) return;
+  input.select();
+  input.setSelectionRange(0, 99999);
+  const btn = document.getElementById('btn-copy-link');
+  const original = btn ? btn.textContent : '';
+  const done = () => {
+    if (btn) {
+      btn.textContent = 'Копирано ✓';
+      setTimeout(() => { btn.textContent = original; }, 1600);
+    }
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(input.value).then(done).catch(() => {
+      try { document.execCommand('copy'); done(); } catch (e) {}
+    });
+  } else {
+    try { document.execCommand('copy'); done(); } catch (e) {}
+  }
+}
+
+// ── Meni: export / import / share (⋯) ──
+function toggleBackupMenu(e) {
+  if (e) e.stopPropagation();
+  const panel = document.getElementById('backup-menu-panel');
+  const btn = document.getElementById('backup-menu-btn');
+  if (!panel || !btn) return;
+  const opening = panel.hidden;
+  panel.hidden = !opening;
+  btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+}
+function closeBackupMenu() {
+  const panel = document.getElementById('backup-menu-panel');
+  const btn = document.getElementById('backup-menu-btn');
+  if (panel) panel.hidden = true;
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+
+function wireBackupMenu() {
+  const menuBtn = document.getElementById('backup-menu-btn');
+  const exportBtn = document.getElementById('btn-export');
+  const importBtn = document.getElementById('btn-import');
+  const importInput = document.getElementById('import-file-input');
+  const shareBtn = document.getElementById('btn-share');
+  const copyBtn = document.getElementById('btn-copy-link');
+  const closeShareBtn = document.getElementById('btn-close-share');
+
+  if (menuBtn) menuBtn.addEventListener('click', toggleBackupMenu);
+  if (exportBtn) exportBtn.addEventListener('click', () => { exportBackup(); closeBackupMenu(); });
+  if (importBtn) importBtn.addEventListener('click', () => importInput && importInput.click());
+  if (importInput) importInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) handleImportFile(file);
+    e.target.value = '';
+  });
+  if (shareBtn) shareBtn.addEventListener('click', toggleShareLink);
+  if (copyBtn) copyBtn.addEventListener('click', copyShareLink);
+  if (closeShareBtn) closeShareBtn.addEventListener('click', hideShareLink);
+
+  document.addEventListener('click', (e) => {
+    const wrap = document.getElementById('backup-menu-wrap');
+    if (wrap && !wrap.contains(e.target)) closeBackupMenu();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeBackupMenu();
+  });
+}
+
+async function init() {
+  wireBackupMenu();
+
+  // ako je stranica otvorena preko share linka, ucitaj taj napredak
+  // kao lokalno stanje ovog uredjaja (npr. telefona) — isto sto je
+  // uradjeno na kompjuteru se sada vidi i ovde, i moze se dalje koristiti.
+  const shared = tryParseShareHash();
+  if (shared) {
+    await loadState();
+    const hasLocal = Object.keys(state).length > 0;
+    const proceed = hasLocal
+      ? confirm('Овај линк носи напредак са другог уређаја. Учитати га овде? Ово ће заменити тренутно сачувано стање на овом уређају.')
+      : true;
+    if (proceed) {
+      state = shared;
+      await saveState();
+    }
+    // ukloni #share=... iz adrese da se ne bi ponovo pitalo pri osvezavanju
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+    fullRerenderFromState();
+    return;
+  }
+
+  await loadState();
+  applyStoredState();
+  initActions();
+  recalc();
+}
+
+init();
+</script>
+
+</body>
+</html>
