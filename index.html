@@ -716,16 +716,32 @@ transition: color 0.15s, border-color 0.15s;
   thead { display: none; }
   tbody { display: block; }
   tr { display: block; margin-bottom: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-  tr.row-passed { box-shadow: inset 3px 0 0 0 rgba(107,165,133,0.5); background: rgba(107,165,133,0.07); }
+  tr.row-passed {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 9px 13px 7px;
+    gap: 2px 10px;
+    background: rgba(107,165,133,0.07);
+    box-shadow: inset 3px 0 0 0 rgba(107,165,133,0.5);
+  }
   tr.row-enrolled { box-shadow: inset 3px 0 0 0 rgba(195,154,82,0.4); }
   tr.row-passed td:first-child, tr.row-enrolled td:first-child { box-shadow: none; }
 
-  /* положени предмети — сажета картица, лакше за прегледање */
-  tr.row-passed td:nth-of-type(2), tr.row-passed td:nth-of-type(3) { display: none; }
-  tr.row-passed td:nth-of-type(1) { padding-bottom: 6px; }
+  /* положени предмети — сажета картица, без вишка простора */
+  tr.row-passed td { display: block; padding: 0; border: none; background: transparent; }
+  tr.row-passed td:nth-of-type(1) { flex: 1 1 100%; }
+  tr.row-passed td:nth-of-type(2), tr.row-passed td:nth-of-type(3),
+  tr.row-passed td:nth-of-type(5), tr.row-passed td:nth-of-type(6) { display: none; }
+  tr.row-passed td:nth-of-type(4) { font-size: 9.5px; color: var(--subtext); }
+  tr.row-passed td:nth-of-type(4)::before { content: "ЕСПБ "; }
+  tr.row-passed td:nth-of-type(7) { flex: 1 1 100%; }
   tr.row-passed .subject-name { display: flex; align-items: center; gap: 6px; }
   tr.row-passed .subject-name::before { content: "✓"; color: var(--green); font-weight: 700; flex-shrink: 0; }
   tr.row-passed .subject-sub { display: none; }
+  tr.row-passed .actions { flex-direction: row; justify-content: space-between; align-items: center; gap: 8px; min-width: 0; }
+  tr.row-passed .passed-summary { flex-direction: row; align-items: center; gap: 8px; }
+  tr.row-passed .btn-undo { margin-top: 0; white-space: nowrap; }
   .sem-divider td { border-top: none !important; }
   .sem-divider { border-top: 3px solid var(--accent) !important; }
 
